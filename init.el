@@ -9,6 +9,7 @@
 (setq auto-save-default nil) ;; sanity
 (savehist-mode 0)  ;; sanity
 
+(setq inhibit-splash-screen 1)
 (scroll-bar-mode 0)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -163,7 +164,7 @@ previously had for accessing my notes and config files"
     ("4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "ba913d12adb68e9dadf1f43e6afa8e46c4822bb96a289d5bf1204344064f041e" "b8929cff63ffc759e436b0f0575d15a8ad7658932f4b2c99415f3dde09b32e97" default)))
  '(package-selected-packages
    (quote
-    (go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
+    (lua-mode go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
