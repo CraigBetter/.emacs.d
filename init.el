@@ -1,7 +1,49 @@
-;TODO 'C-S-h', org-mode, and 'M-!' don't work in tty
+;TODO 'C-S-h', org-mode, and 'M-!' don't work in tty, make word objects work the same way they do in vim?
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
+
+; ----------------------------------------------------------------------------- new stuff
+(defun launch-separate-emacs-in-terminal () ; https://emacs.stackexchange.com/questions/5428/restart-emacs-from-within-emacs
+  (suspend-emacs "fg ; emacs -nw"))
+(defun launch-separate-emacs-under-x ()
+  (call-process "sh" nil nil nil "-c" "emacs &"))
+(defun restart-emacs ()
+  (interactive)
+  ;; We need the new emacs to be spawned after all kill-emacs-hooks
+  ;; have been processed and there is nothing interesting left
+  (let ((kill-emacs-hook (append kill-emacs-hook (list (if (display-graphic-p)
+                                                           #'launch-separate-emacs-under-x
+							   #'launch-separate-emacs-in-terminal)))))
+    (save-buffers-kill-emacs)))
+
+; install the missing packages
+;(package-refresh-contents)
+;(when (require 'use-package nil 'noerror)
+;  (package-install 'use-package))
+;(package-install 'use-package)
+(setq package-list '(evil evil-collection evil-numbers evil-leader evil-commentary telephone-line ivy eyebrowse geiser use-package gruvbox-theme))
+; constant-theme 
+(let ((restart nil))
+  (progn
+    (dolist (package package-list)
+      (if (not (package-installed-p package)) ; It works, I did it!
+	(progn (package-refresh-contents) ; https://emacs.stackexchange.com/questions/39250/error-package-use-package-is-unavailable
+	       (package-install package)
+	       (setq restart t))))
+    (if restart (restart-emacs)))) ; WARNING: this avoids problems with bytecompile warnings, and evil initialization order but also stops me from seeing warnings and such
+
+;; This is only needed once, near the top of the file
+(eval-when-compile
+  ;; Following line is not needed if use-package.el is in ~/.emacs.d
+  (add-to-list 'load-path "~/.emacs.d/elpa/")
+  (require 'use-package))
+
+; https://www.reddit.com/r/emacs/comments/4fqu0a/automatically_install_packages_on_startup/
+; list the packages you want
+;(setq package-list '(evil evil-collection evil-numbers evil-leader evil-commentary telephone-line ivy constant-theme eyebrowse))
+
+; ----------------------------------------------------------------------------- new stuff
 
 (setq make-backup-files nil) ; stop creating backup~ files, link: http://ergoemacs.org/emacs/emacs_set_backup_into_a_directory.html
 (setq auto-save-default nil) ; stop creating #autosave# files
@@ -18,21 +60,21 @@
 (setq evil-want-C-i-jump nil)     ;make tab work with evil and org mode in terminal. Taken from; https://stackoverflow.com/questions/22878668/emacs-org-mode-evil-mode-tab-key-not-working
 (setq evil-want-C-u-scroll t)
 (setq evil-want-C-i-jump nil) ; make tab work with evil and org mode in terminal. Taken from; https://stackoverflow.com/questions/22878668/emacs-org-mode-evil-mode-tab-key-not-working
-(require 'evil)			  ;See https://github.com/emacs-evil/evil-collection/issues/60 for more details.
-(require 'evil-collection)
+(use-package evil)			  ;See https://github.com/emacs-evil/evil-collection/issues/60 for more details.
+(use-package evil-collection)
 (evil-collection-init)
 (evil-mode 1)
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up) ;;sanity
 (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward) ;;why was this not bound by default?
-(require 'evil-commentary)
+(use-package evil-commentary)
 (evil-commentary-mode 1)
-(require 'evil-leader)
+(use-package evil-leader)
 (global-evil-leader-mode)
 (evil-leader/set-key
   "n" 'notes-menu
   "x b" 'ivy-switch-buffer
   "r" 'eval-region)
-(require 'evil-numbers)
+(use-package evil-numbers)
 (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
 (define-key evil-visual-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
 (define-key evil-normal-state-map (kbd "C-S-a") 'evil-numbers/dec-at-pt)
@@ -45,10 +87,10 @@
 (define-key evil-normal-state-map (kbd "<f10>") '(lambda () (interactive) (progn (save-buffer) (compile "make"))))
 (setq sentence-end-double-space nil) ; from: https://emacs.stackexchange.com/questions/14358/how-do-i-jump-to-the-next-sentence-in-evil
 
-(require 'telephone-line)
+(use-package telephone-line)
 (telephone-line-mode)
 
-(require 'ivy)
+(use-package ivy)
 (define-key ivy-switch-buffer-map (kbd "C-k") nil)                         ;; unbind ivy-switch-buffer-kill
 (define-key ivy-switch-buffer-map (kbd "C-S-k") 'ivy-switch-buffer-kill)   ;; rebind ivy-switch-buffer-kill
 (define-key ivy-minibuffer-map (kbd "C-j") 'next-line)                     ;; this works for some reason
@@ -63,11 +105,13 @@ previously had for accessing my notes and config files"
   (find-file (ivy-read "bookmark files: " notes-list)))
 
 
-(require 'constant-theme)
-(load-theme 'constant t)
-;; (require 'snazzy-theme)
+(use-package gruvbox-theme)
+(load-theme 'gruvbox-dark-hard t)
+;; (use-package constant-theme)
+;; (load-theme 'constant t)
+;; (use-package snazzy-theme)
 ;; (load-theme 'snazzy t)
-;(require 'soothe-theme)
+;(use-package soothe-theme)
 ;(load-theme 'soothe t)
 
 
@@ -89,9 +133,10 @@ previously had for accessing my notes and config files"
                    "~/.emacs.d/notes-menu.org"
                    "~/.emacs.d/init.el"
                    "~/Documents/lisp/clojure/test.clj"
-                   "~/Documents/notes/c-notes.org"))
+                   "~/Documents/notes/c-notes.org"
+		   "~/Documents/notes/javascript.org"))
 
-(require 'geiser)
+(use-package geiser)
 
 ;;---------- sarcasm -----------------------------------------
 (progn
@@ -111,7 +156,7 @@ previously had for accessing my notes and config files"
   (evil-leader/set-key "x s" 'sarcasify-line))
 
 ;;------- some eyebrowse bindings -------------------------------------
-(require 'eyebrowse)  ;; <- I don't need this?
+(use-package eyebrowse)  ;; <- I don't need this?
 (define-key evil-normal-state-map (kbd "g 0") 'eyebrowse-switch-to-window-config-0) ;; maybe also do this for visual state?
 (define-key evil-normal-state-map (kbd "g 1") 'eyebrowse-switch-to-window-config-1)
 (define-key evil-normal-state-map (kbd "g 2") 'eyebrowse-switch-to-window-config-2)
@@ -137,7 +182,7 @@ previously had for accessing my notes and config files"
 ;; (define-key evil-normal-state-map (kbd "g 9") '(lambda () (interactive) (progn (eyebrowse-switch-to-window-config-9) (delete-other-windows) (switch-to-buffer "scritch"))))
 
 ;; here is essh stuff
-;; (require 'essh)
+;; (use-package essh)
 (load-file "~/.emacs.d/essh.el")
 (defun essh-sh-hook ()
   (define-key sh-mode-map "\C-c\C-r" 'pipe-region-to-shell)
@@ -161,10 +206,10 @@ previously had for accessing my notes and config files"
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "ba913d12adb68e9dadf1f43e6afa8e46c4822bb96a289d5bf1204344064f041e" "b8929cff63ffc759e436b0f0575d15a8ad7658932f4b2c99415f3dde09b32e97" default)))
+    ("a22f40b63f9bc0a69ebc8ba4fbc6b452a4e3f84b80590ba0a92b4ff599e53ad0" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "ba913d12adb68e9dadf1f43e6afa8e46c4822bb96a289d5bf1204344064f041e" "b8929cff63ffc759e436b0f0575d15a8ad7658932f4b2c99415f3dde09b32e97" default)))
  '(package-selected-packages
    (quote
-    (lua-mode go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
+    (gruvbox-theme lua-mode go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
