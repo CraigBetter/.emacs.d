@@ -87,6 +87,9 @@
 (define-key evil-normal-state-map (kbd "<f10>") '(lambda () (interactive) (progn (save-buffer) (compile "make"))))
 (setq sentence-end-double-space nil) ; from: https://emacs.stackexchange.com/questions/14358/how-do-i-jump-to-the-next-sentence-in-evil
 
+(setq scroll-margin 7)
+(setq scroll-conservatively 1)
+
 (use-package telephone-line)
 (telephone-line-mode)
 
@@ -223,7 +226,7 @@ previously had for accessing my notes and config files"
     ("a22f40b63f9bc0a69ebc8ba4fbc6b452a4e3f84b80590ba0a92b4ff599e53ad0" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "ba913d12adb68e9dadf1f43e6afa8e46c4822bb96a289d5bf1204344064f041e" "b8929cff63ffc759e436b0f0575d15a8ad7658932f4b2c99415f3dde09b32e97" default)))
  '(package-selected-packages
    (quote
-    (doom-themes counsel sublimity rainbow-blocks rainbow-delimiters gruvbox-theme lua-mode go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
+    (ivy-explorer doom-themes counsel sublimity rainbow-blocks rainbow-delimiters gruvbox-theme lua-mode go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
