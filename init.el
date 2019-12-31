@@ -22,7 +22,7 @@
 ;(when (require 'use-package nil 'noerror)
 ;  (package-install 'use-package))
 ;(package-install 'use-package)
-(setq package-list '(evil evil-collection evil-numbers evil-leader evil-commentary telephone-line ivy eyebrowse geiser use-package gruvbox-theme counsel lua-mode))
+(setq package-list '(evil evil-collection evil-numbers evil-leader evil-commentary telephone-line ivy eyebrowse geiser use-package gruvbox-theme counsel lua-mode helm helm-projectile))
 ; constant-theme 
 (let ((restart nil))
   (progn
@@ -31,7 +31,7 @@
 	  (progn (package-refresh-contents) ; https://emacs.stackexchange.com/questions/39250/error-package-use-package-is-unavailable
 		 (package-install package)
 		 (setq restart t))))
-    (if restart (restart-emacs)))) ; WARNING: this avoids problems with bytecompile warnings, and evil initialization order but also stops me from seeing warnings and such
+    (if restart (restart-emacs)))) ; WARNING: this avoids problems with bytecompile warnings, and evil initialization order, but also stops me from seeing warnings and such
 
 ;; This is only needed once, near the top of the file
 (eval-when-compile
@@ -93,13 +93,117 @@
 (use-package telephone-line)
 (telephone-line-mode)
 
-(use-package ivy)
-(define-key ivy-switch-buffer-map (kbd "C-k") nil)                         ;; unbind ivy-switch-buffer-kill
-(define-key ivy-switch-buffer-map (kbd "C-S-k") 'ivy-switch-buffer-kill)   ;; rebind ivy-switch-buffer-kill
-(define-key ivy-minibuffer-map (kbd "C-j") 'next-line)                     ;; this works for some reason
-(define-key ivy-minibuffer-map (kbd "C-k") 'previous-line)                 ;; see line 301, 302 of ivy.el for reasoning
-(define-key ivy-switch-buffer-map (kbd "C-k") 'previous-line)              ;; for some reason this has to be bound in both keymaps after rebinding ivy-switch-buffer-kill
-(ivy-mode 1)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; HELM!!! ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package helm ;; taken from: https://emacs.stackexchange.com/questions/34277/best-practice-for-emacs-helm-setup-after-use-package-verse
+ ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+ ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+ ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+ :demand t
+ :bind (("M-x" . helm-M-x)
+    ("C-c h o" . helm-occur)
+    ("<f1> SPC" . helm-all-mark-rings) ; I modified the keybinding 
+    ("M-y" . helm-show-kill-ring)
+    ("C-c h x" . helm-register)    ; C-x r SPC and C-x r j
+    ("C-c h g" . helm-google-suggest)
+    ("C-c h M-:" . helm-eval-expression-with-eldoc)
+    ("C-x C-f" . helm-find-files)
+    ("C-x b" . helm-mini)      ; *<major-mode> or /<dir> or !/<dir-not-desired> or @<regexp>
+    
+    
+    :map helm-map
+    ("<tab>" . helm-execute-persistent-action) ; rebind tab to run persistent action
+    ("C-i" . helm-execute-persistent-action) ; make TAB works in terminal
+    ("C-z" . helm-select-action) ; list actions using C-z
+    ("C-j" . helm-next-line)	  ; (define-key helm-map (kbd "C-j") 'helm-next-line)     taken from:
+    ("C-k" . helm-previous-line)  ; (define-key helm-map (kbd "C-k") 'helm-previous-line) https://emacs.stackexchange.com/questions/18861/helm-bind-c-j-and-c-k-to-list-navigation-cursor-position
+    :map shell-mode-map
+    ("C-c C-l" . helm-comint-input-ring) ; in shell mode
+    :map minibuffer-local-map
+    ("C-c C-l" . helm-minibuffer-history))
+ :init
+ (setq helm-command-prefix-key "C-c h"))
+(use-package helm-config) ;; what even is this?
+(use-package helm-projectile)
+
+;; taken from: http://lotabout.me/orgwiki/emacs-helm.html
+;; (when (package-installed-p 'helm)
+;;   ;; change default prefix key
+;;   (global-set-key (kbd "C-c h") 'helm-command-prefix)
+
+;;   ;; helm-M-x
+;;   (setq helm-M-x-fuzzy-match t)
+;;   (global-set-key (kbd "M-x") 'helm-M-x)
+
+;;   ;; helm-kill-ring
+;;   (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+;;   ;; helm-mini
+;;   (global-set-key (kbd "C-x b") 'helm-mini)
+;;   (setq helm-buffers-fuzzy-matching t
+;;         helm-recentf-fuzzy-match t)
+
+;;   ;; helm-find-files
+;;   (global-set-key (kbd "C-x C-f") 'helm-find-files)
+;;   )
+
+;; ;;; -----------------------------
+;; ;;; helm-projectile
+;; (when (package-installed-p 'helm-projectile)
+;;   (projectile-global-mode)
+;;   (helm-projectile-on)
+;;   )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; AAAAAAAAAAAHHHHHHHH!!! ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; secondary helm ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; taken from: http://tuhdo.github.io/helm-intro.html
+;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+ (global-set-key (kbd "C-c h") 'helm-command-prefix)
+ (global-unset-key (kbd "C-x c"))
+
+ (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+ (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
+ (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+ (when (executable-find "curl")
+   (setq helm-google-suggest-use-curl-p t))
+
+ (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+       helm-ff-file-name-history-use-recentf t
+       helm-echo-input-in-header-line t)
+
+ (defun spacemacs//helm-hide-minibuffer-maybe ()
+   "Hide minibuffer in Helm session if we use the header line as input field."
+   (when (with-helm-buffer helm-echo-input-in-header-line)
+     (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
+       (overlay-put ov 'window (selected-window))
+       (overlay-put ov 'face
+                    (let ((bg-color (face-background 'default nil)))
+                      `(:background ,bg-color :foreground ,bg-color)))
+       (setq-local cursor-type nil))))
+
+
+ (add-hook 'helm-minibuffer-set-up-hook
+           'spacemacs//helm-hide-minibuffer-maybe)
+
+ (setq helm-autoresize-max-height 0)
+ (setq helm-autoresize-min-height 20)
+ (helm-autoresize-mode 1)
+
+ (helm-mode 1)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; AAAAAAAAAAAHHHHHHHH!!! ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (use-package ivy)
+;; (define-key ivy-switch-buffer-map (kbd "C-k") nil)                         ;; unbind ivy-switch-buffer-kill
+;; (define-key ivy-switch-buffer-map (kbd "C-S-k") 'ivy-switch-buffer-kill)   ;; rebind ivy-switch-buffer-kill
+;; (define-key ivy-minibuffer-map (kbd "C-j") 'next-line)                     ;; this works for some reason
+;; (define-key ivy-minibuffer-map (kbd "C-k") 'previous-line)                 ;; see line 301, 302 of ivy.el for reasoning
+;; (define-key ivy-switch-buffer-map (kbd "C-k") 'previous-line)              ;; for some reason this has to be bound in both keymaps after rebinding ivy-switch-buffer-kill
+;; (ivy-mode 1)
 
 (use-package counsel)
 (counsel-mode 1)
@@ -226,7 +330,7 @@ previously had for accessing my notes and config files"
     ("a22f40b63f9bc0a69ebc8ba4fbc6b452a4e3f84b80590ba0a92b4ff599e53ad0" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "ba913d12adb68e9dadf1f43e6afa8e46c4822bb96a289d5bf1204344064f041e" "b8929cff63ffc759e436b0f0575d15a8ad7658932f4b2c99415f3dde09b32e97" default)))
  '(package-selected-packages
    (quote
-    (ivy-explorer doom-themes counsel sublimity rainbow-blocks rainbow-delimiters gruvbox-theme lua-mode go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
+    (helm-projectile ivy-explorer doom-themes counsel sublimity rainbow-blocks rainbow-delimiters gruvbox-theme lua-mode go-mode minimal-theme constant-theme dracula-theme geiser evil-leader evil-numbers evil-commentary ivy telephone-line soothe-theme snazzy-theme helm eyebrowse evil-collection))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
