@@ -31,8 +31,11 @@
 ;(when (require 'use-package nil 'noerror)
 ;  (package-install 'use-package))
 ;(package-install 'use-package)
-(setq package-list '(evil evil-collection evil-numbers evil-leader evil-commentary telephone-line
-			  ivy eyebrowse geiser use-package gruvbox-theme counsel lua-mode helm helm-projectile which-key))
+(setq package-list
+      '(evil evil-collection evil-numbers evil-leader evil-commentary
+	telephone-line ivy eyebrowse geiser use-package gruvbox-theme
+	counsel lua-mode helm helm-projectile which-key evil-space
+	vimish-fold evil-vimish-fold))
 ; constant-theme 
 (let ((restart nil))
   (progn
@@ -306,17 +309,15 @@ previously had for accessing my notes and config files"
 (progn
   (defun sarcasify-line ()
     (interactive)
-    (let ((line-size
-           (- (line-end-position) (line-beginning-position))) ; size of line
-          (count 1)
-          (start-position (point))) ; 0 index it?
-      (beginning-of-line)
-      (forward-char)
-      (while (< count line-size)
-        (progn (evil-invert-case (point) (1+ (point)))
-               (forward-char 2)
-               (setq count (+ count 2))))
-      (goto-char start-position)))
+    (let ((line-size (- (line-end-position) (line-beginning-position))) ; size of line
+	  (count 1))
+      (save-excursion
+	(beginning-of-line)
+	(forward-char)
+	(while (< count line-size)
+	  (progn (evil-invert-case (point) (1+ (point)))
+		 (forward-char 2)
+		 (setq count (+ count 2)))))))
   (evil-leader/set-key "x s" 'sarcasify-line))
 #+end_src
 
@@ -402,3 +403,36 @@ previously had for accessing my notes and config files"
 	(insert down-string))
     (print "you didn't highlight anything")))
 #+end_src
+
+* matching functions
+#+begin_src emacs-lisp :tangle no
+(defun matcherooney ()
+  (interactive)
+  (save-excursion
+    (let ((match-list '("upper" "lower" "step" "time" "gravity" "position" "velocity"
+			"acceleration" "correction_force" "setpoint" "position" "velocity"
+			"acceleration" "correction_force" "running_error")))
+      (dolist (match match-list)
+	(save-excursion
+	  (while (re-search-forward match nil t)
+	    (replace-match (concat "self." match))))))))
+#+end_src
+
+* send to eshell
+#+begin_src emacs-lisp :tangle no
+;https://emacs.stackexchange.com/questions/7617/how-to-programmatically-execute-a-command-in-eshell
+(with-current-buffer "*eshell*"
+  (eshell-return-to-prompt)
+  (insert "ls") ;<- insert stuff here
+  (eshell-send-input)
+  (eshell-next-prompt 1));this line doesn't seem to work
+#+end_src
+
+* dired+ 
+  link: https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
+#+begin_src emacs-lisp :tangle yes
+(load-file "~/.emacs.d/dired+.el")
+(diredp-toggle-find-file-reuse-dir 1) ;https://emacs.stackexchange.com/questions/2445/dired-only-reuse-buffer-for-directories
+(customize-set-variable 'diredp-hide-details-initially-flag nil)
+#+end_src
+ 
