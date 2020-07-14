@@ -37,7 +37,7 @@
 	counsel lua-mode helm helm-projectile which-key evil-space
 	vimish-fold evil-vimish-fold slime evil-lion ranger
 	doom-modeline doom-themes arduino-mode scad-mode company jedi
-	hy-mode origami))
+	hy-mode origami vterm xclip ivy-rich ivy-explorer go-mode evil-god-state evil-org))
 ; constant-theme 
 (let ((restart nil))
   (progn
