@@ -35,7 +35,9 @@
       '(evil evil-collection evil-numbers evil-leader evil-commentary
 	telephone-line ivy eyebrowse geiser use-package gruvbox-theme
 	counsel lua-mode helm helm-projectile which-key evil-space
-	vimish-fold evil-vimish-fold))
+	vimish-fold evil-vimish-fold slime evil-lion ranger
+	doom-modeline doom-themes arduino-mode scad-mode company jedi
+	hy-mode origami vterm xclip ivy-rich ivy-explorer go-mode evil-god-state evil-org))
 ; constant-theme 
 (let ((restart nil))
   (progn
@@ -74,11 +76,23 @@
 (menu-bar-mode 0)
 
 (global-display-line-numbers-mode)
+;(setq display-line-numbers 'relative)
 
 (global-unset-key (kbd "C-x C-c"))
+
+(setq gc-cons-threshold 100000000)
+
+; https://emacs.stackexchange.com/questions/22499/how-can-i-tell-emacs-to-always-open-help-buffers-in-the-current-window
+; open help windows in buffer they were invoked from
+;; (add-to-list 'display-buffer-alist
+;;              '("*Help*" display-buffer-same-window))
+
+;; make cursor blink forever in GUI
+(setq blink-cursor-blinks 0)
 #+end_src
 
 * evil setup
+** initial stuff
 #+begin_src emacs-lisp :tangle yes
 (setq evil-want-keybinding nil)   ;Warning (evil-collection): Make sure to set `evil-want-keybinding' to nil before loading evil or evil-collection.
 (setq evil-want-C-i-jump nil)     ;make tab work with evil and org mode in terminal. Taken from; https://stackoverflow.com/questions/22878668/emacs-org-mode-evil-mode-tab-key-not-working
@@ -112,17 +126,53 @@
 (setq sentence-end-double-space nil) ; from: https://emacs.stackexchange.com/questions/14358/how-do-i-jump-to-the-next-sentence-in-evil
 ;; (define-key org-mode-map evil-normal-state-map (kbd "<tab>") 'org-cycle) ;how do I do this?
 #+end_src
+** fix evil search
+https://emacs.stackexchange.com/questions/31334/history-of-search-terms-for-evil-mode
+the final solution was in the comment in the following link:
+https://stackoverflow.com/questions/25768036/emacs-evil-non-incremental-search-and-persistent-highlighting/34252236#34252236
+#+begin_src emacs-lisp :tangle yes
+;(setq-default evil-search-module 'evil-search)
+(evil-select-search-module 'evil-search-module 'evil-search) ;more evil
+(evil-select-search-module 'evil-search-module 'isearch)     ;less evil
+#+end_src
 
+** evil-lion
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-lion
+  :ensure t
+  :config
+  (evil-lion-mode))
+#+end_src
+
+** evil-org
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-org
+  :ensure t
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda ()
+              (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+end_src
+
+** vimish-folds
+   https://github.com/seregaxvm/vimish-fold
+preliminary stuff   
+#+begin_src emacs-lisp :tangle yes
+(use-package vimish-fold)
+(define-key evil-normal-state-map (kbd "z f") 'vimish-fold-unfold)
+;(define-key evil-normal-state-map (kbd "z f") 'vimish-fold)
+(define-key evil-visual-state-map (kbd "z f") 'vimish-fold)
+(define-key evil-normal-state-map (kbd "z d") 'vimish-fold-delete)
+#+end_src
+   
 * set scroll variables
 #+begin_src emacs-lisp :tangle yes
 (setq scroll-margin 7)
 (setq scroll-conservatively 1)
-#+end_src
-
-* telephone-line
-#+begin_src emacs-lisp :tangle yes
-(use-package telephone-line)
-(telephone-line-mode)
 #+end_src
 
 * Helm
@@ -284,14 +334,25 @@ previously had for accessing my notes and config files"
                    "~/.emacs.d/config.org"
                    "~/Documents/lisp/clojure/test.clj"
                    "~/Documents/notes/c-notes.org"
-		   "~/Documents/notes/javascript.org"))
+		   "~/Documents/notes/javascript.org"
+		   "~/Documents/notes/macro.org"))
 #+end_src
 
-* gruvbox-theme
+* :theme:
 #+begin_src emacs-lisp :tangle yes
-(use-package gruvbox-theme)
-(load-theme 'gruvbox-dark-hard t)
+;(load-theme 'doom-dark+ t)
+(load-theme 'doom-Iosvkem t)
 #+end_src
+** :modeline:
+#+begin_src emacs-lisp :tangle yes
+(doom-modeline-mode)
+(setq doom-modeline-height 15)
+  ;; (use-package telephone-line)
+  ;; (telephone-line-mode)
+#+end_src
+
+;(use-package gruvbox-theme)
+;(load-theme 'gruvbox-dark-hard t)
 ;; (use-package constant-theme)
 ;; (load-theme 'constant t)
 ;; (use-package snazzy-theme)
@@ -302,6 +363,7 @@ previously had for accessing my notes and config files"
 * geiser
 #+begin_src emacs-lisp :tangle yes
 (use-package geiser)
+(setq geiser-chicken-binary "chicken-csi") ;; this is neccesary in arch-based distros
 #+end_src
 
 * sarcasm
@@ -317,8 +379,8 @@ previously had for accessing my notes and config files"
 	(forward-char)
 	(while (< count line-size)
 	  (progn (evil-invert-case (point) (1+ (point)))
-		 (forward-char 2)
-		 (setq count (+ count 2)))))))
+		 (forward-char 3)
+		 (setq count (+ count 3)))))))
   (evil-leader/set-key "x s" 'sarcasify-line))
 #+end_src
 
@@ -389,19 +451,34 @@ previously had for accessing my notes and config files"
 (evil-leader/set-key "m" 'toggle-maximize-buffer)
 #+end_src
 
-* format things for this org-file
+* put things between strings :format:
+** format things for this org-file
+ #+begin_src emacs-lisp :tangle yes
+ (defun format-it ()
+   (interactive)
+   (if (region-active-p)
+       (let ((up-string "#+begin_src emacs-lisp :tangle yes\n")
+	     (down-string "\n#+end_src\n")
+	     (BEG (region-beginning))
+	     (END (region-end)))
+	 (kill-region BEG END)
+	 (insert up-string)
+	 (yank)
+	 (insert down-string))
+     (print "you didn't highlight anything")))
+ #+end_src
+
+** code formating for tex files
 #+begin_src emacs-lisp :tangle yes
-(defun format-it ()
+(defun format-tex ()
   (interactive)
   (if (region-active-p)
-      (let ((up-string "#+begin_src emacs-lisp :tangle yes\n")
-	    (down-string "\n#+end_src\n")
-	    (BEG (region-beginning))
-	    (END (region-end)))
-	(kill-region BEG END)
-	(insert up-string)
+      (let ((start-string "\\begin{verbatim}")
+	    (end-string "\\end{verbatim}"))
+	(kill-region (region-beginning) (region-end))
+	(insert start-string)
 	(yank)
-	(insert down-string))
+	(insert end-string))
     (print "you didn't highlight anything")))
 #+end_src
 
@@ -461,3 +538,83 @@ previously had for accessing my notes and config files"
 (add-to-list 'exec-path "c:/Users/cbest/Documents/programming/kludge/bin") ;; doesn't work?
 #+end_src
 
+=======
+* :dired:
+** dired+
+   link: https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
+ #+begin_src emacs-lisp :tangle yes
+ (load-file "~/.emacs.d/misc-elisp/dired+.el")  
+ (diredp-toggle-find-file-reuse-dir 1) ;https://emacs.stackexchange.com/questions/2445/dired-only-reuse-buffer-for-directories
+ (customize-set-variable 'diredp-hide-details-initially-flag nil)
+ (define-key dired-mode-map [mouse-1] 'diredp-find-file-reuse-dir-buffer)
+ ; on line 56 of mouse.el
+ (setq mouse-1-click-follows-link nil)
+ #+end_src
+ 
+** ranger.el
+(use-package ranger)
+* scrolling
+  link: https://www.emacswiki.org/emacs/SmoothScrolling
+#+begin_src emacs-lisp :tangle yes
+  ;; scroll one line at a time (less "jumpy" than defaults)
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+  (setq scroll-step 1) ;; keyboard scroll one line at a time
+  (setq scroll-conservatively 10000)
+  (setq auto-window-vscroll nil)
+#+end_src
+
+* bell
+  https://emacs.stackexchange.com/questions/28906/how-to-switch-off-the-sounds
+#+begin_src emacs-lisp :tangle yes
+(setq ring-bell-function 'ignore)
+#+end_src
+
+* list diffing
+  TODO list which list each element came from
+#+begin_src emacs-lisp :tangle no
+(defun same-lists (list1 list2)
+  "Insert the atoms/lists that are common to each list."
+  (let ((same-list nil))
+    (dolist (element1 list1)
+      (dolist (element2 list2)
+	(if (eq element1 element2)
+	    (catch 'err
+	      ;; check if same-list contains element1
+	      (dolist (same same-list)
+		(if (eq same element1)
+		    (throw 'err t)))
+	      (setq same-list (cons element1 same-list))))))
+    same-list))
+
+(defun diff-lists (list1 list2)
+  "Insert the atoms/lists that are not common to each list."
+  (let ((diff-list nil)
+	(same-list (same-lists list1 list2))
+	(master-list (append list1 list2)))
+    (dolist (element master-list)
+	(catch 'match-found
+	  ;; check for match in an list
+	  (dolist (element-same same-list)
+	    (if (eq element element-same)
+		(throw 'match-found nil)))
+	  (setq diff-list (cons element diff-list))))
+    diff-list))
+
+(insert (concat "\n; => " (format "%S" (diff-lists '(1 2 1 4 37 36) '(36 1 4))) "\n"))
+; => (37 2)
+(insert (concat "\n; => " (format "%S" (diff-lists package-selected-packages package-list)) "\n"))
+; => (helm ivy evil ivy-explorer ivy-rich go-mode origami hy-mode jedi company)
+#+end_src
+
+* org-agenda
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-files '("/home/craig/Documents/notes/macro.org"))
+#+end_src
+* god-mode & god-state
+  https://github.com/gridaphobe/evil-god-state
+#+begin_src emacs-lisp :tangle yes
+(evil-define-key 'normal global-map "," 'evil-execute-in-god-state)
+(evil-define-key 'god global-map [escape] 'evil-god-state-bail)
+#+end_src
