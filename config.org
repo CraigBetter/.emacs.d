@@ -265,7 +265,8 @@ previously had for accessing my notes and config files"
   (interactive)
   (find-file (ivy-read "bookmark files: " notes-list)))
 
-(setq notes-list '("~/Documents/notes/bookmarks.org"
+(setq notes-list '("~/../notes.org"
+                   "~/Documents/notes/bookmarks.org"
                    "~/Documents/notes/qutebrowser.org"
                    "~/Documents/notes/awesome.org"
                    "~/Documents/notes/openSCAD.org"
@@ -431,8 +432,32 @@ previously had for accessing my notes and config files"
 * dired+ 
   link: https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
 #+begin_src emacs-lisp :tangle yes
-(load-file "~/.emacs.d/dired+.el")
-(diredp-toggle-find-file-reuse-dir 1) ;https://emacs.stackexchange.com/questions/2445/dired-only-reuse-buffer-for-directories
-(customize-set-variable 'diredp-hide-details-initially-flag nil)
+  (load-file "~/.emacs.d/dired+.el")
+  (diredp-toggle-find-file-reuse-dir 1) ;https://emacs.stackexchange.com/questions/2445/dired-only-reuse-buffer-for-directories
+  (customize-set-variable 'diredp-hide-details-initially-flag nil)
+  (define-key dired-mode-map [mouse-1] 'diredp-find-file-reuse-dir-buffer)
+  ;; (define-key dired-mode-map [down-mouse-1] 'dired-find-file)
+  ;; (define-key dired-mode-map [up-mouse-1] 'dired-find-file)
+  ;; (define-key dired-mode-map [mouse-2] 'dired-find-file)
+  ; the following is found in:
+  ; c:/Users/cbest/Documents/programming/kludge/emacs-26.2-i686/share/emacs/26.2/lisp/mouse.el
+  ; on line 56
+  (setq mouse-1-click-follows-link nil)
+  ; you should, instead, try to change the behavior of long clicks
+  ; instead of removing them
 #+end_src
  
+* windows python
+  For some reason, I couldn't find the documentation for
+  python-shell-exec-path, using counsel-describe-variable 'C-h v',
+  until I ran python-mode
+#+begin_src emacs-lisp :tangle yes
+(setq python-shell-exec-path '("c:/Users/cbest/Documents/programming/Winpython/WPy32-3760/python-3.7.6/"))
+#+end_src
+
+* add to PATH
+  link: https://emacs.stackexchange.com/questions/461/configuration-of-eshell-running-programs-from-directories-in-path-env-variable
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'exec-path "c:/Users/cbest/Documents/programming/kludge/bin") ;; doesn't work?
+#+end_src
+
