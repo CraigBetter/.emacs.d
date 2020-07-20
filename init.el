@@ -12,7 +12,7 @@
  '(diredp-hide-details-initially-flag nil)
  '(package-selected-packages
    (quote
-    (vterm evil-god-state evil-org xclip ranger darktooth-theme doom-modeline doom-themes arduino-mode scad-mode company jedi hy-mode evil-lion slime origami evil-vimish-fold vimish-fold evil-space go-mode which-key use-package telephone-line lua-mode ivy-rich ivy-explorer helm-projectile gruvbox-theme geiser eyebrowse evil-numbers evil-leader evil-commentary evil-collection counsel)))
+    (org-roam vterm evil-god-state evil-org xclip ranger darktooth-theme doom-modeline doom-themes arduino-mode scad-mode company jedi hy-mode evil-lion slime origami evil-vimish-fold vimish-fold evil-space go-mode which-key use-package telephone-line lua-mode ivy-rich ivy-explorer helm-projectile gruvbox-theme geiser eyebrowse evil-numbers evil-leader evil-commentary evil-collection counsel)))
  '(which-key-prefix-prefix "+")
  '(which-key-separator " "))
 (custom-set-faces
