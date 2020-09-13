@@ -33,12 +33,12 @@
 ;(package-install 'use-package)
 (setq package-list
       '(evil evil-collection evil-numbers evil-leader evil-commentary
-	telephone-line ivy eyebrowse geiser use-package gruvbox-theme
+	ivy eyebrowse geiser use-package 
 	counsel lua-mode helm helm-projectile which-key evil-space
 	vimish-fold evil-vimish-fold slime evil-lion 
-	doom-modeline doom-themes arduino-mode scad-mode company jedi
+	 doom-themes arduino-mode scad-mode company jedi
 	hy-mode origami vterm xclip ivy-rich ivy-explorer go-mode
-	evil-god-state evil-org org-roam))
+	evil-god-state  org-roam))
 ; constant-theme 
 (let ((restart nil))
   (progn
