@@ -541,8 +541,6 @@ previously had for accessing my notes and config files"
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'exec-path "c:/Users/cbest/Documents/programming/kludge/bin") ;; doesn't work?
 #+end_src
-
-=======
 * :dired:
 ** dired+
    link: https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
@@ -619,4 +617,15 @@ previously had for accessing my notes and config files"
 #+begin_src emacs-lisp :tangle yes
 (evil-define-key 'normal global-map "," 'evil-execute-in-god-state)
 (evil-define-key 'god global-map [escape] 'evil-god-state-bail)
+#+end_src
+* org-babel
+  <2020-09-05 Sat>
+  https://orgmode.org/worg/org-contrib/babel/languages.html#configure
+  bash source blocks https://stackoverflow.com/questions/29163164/how-can-i-load-bash-as-opposed-to-sh-in-org-babel-to-enable-begin-src-bash
+#+begin_src emacs-lisp :tangle yes
+;; active Babel languages
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (shell . t))) ;this allows bash to be run in babel src blocks
 #+end_src
