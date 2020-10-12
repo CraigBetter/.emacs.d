@@ -59,7 +59,18 @@ TODO: split this up into sections
   (use-package evil
     :ensure t
     :init   ;; run before loading evil-mode
-    (setq evil-want-C-i-jump nil)
+    (setq evil-want-C-i-jump nil) ;; this doesn't work the first time
+                                  ;; emacs is run, ie when emacs downloads this package
     :config ;; run after loading evil-mode
     (evil-mode 1))
+  #+end_src
+* theme
+  make background colorless when in terminal
+  https://stackoverflow.com/questions/19054228/emacs-disable-theme-background-color-in-terminal
+  #+begin_src emacs-lisp :tangle yes
+  (use-package doom-themes
+  :ensure t
+  :config (load-theme 'doom-Iosvkem t)
+  (unless (display-graphic-p)
+    (set-face-background 'default "unspecified-bg")))
   #+end_src
