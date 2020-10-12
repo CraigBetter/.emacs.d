@@ -34,7 +34,8 @@ TODO: split this up into sections
 (define-key org-mode-map (kbd "C-c C-,") nil)
 (define-key org-mode-map (kbd "C-c ,") 'org-insert-structure-template)
 
-
+; taken from: https://gitlab.haskell.org/ghc/ghc/-/wikis/emacs
+(setq-default indent-tabs-mode nil)
 #+end_src
 
 * set up melpa
@@ -86,14 +87,50 @@ TODO: split this up into sections
         neo-global--select-window, neo-buffer--insert-file-entry,
         neo-buffer--insert-dir-entry, neo-buffer--insert-root-entry
 * completion
+** icomplete-vertical
+   #+begin_src emacs-lisp :tangle yes
+   (use-package icomplete-vertical
+     :ensure t
+     :demand t
+     :custom
+     (completion-styles '(partial-completion substring))
+     (completion-category-overrides '((file (styles basic substring))))
+     (read-file-name-completion-ignore-case t)
+     (read-buffer-completion-ignore-case t)
+     (completion-ignore-case t)
+     :config
+     (icomplete-mode)
+     (icomplete-vertical-mode)
+     :bind (:map icomplete-minibuffer-map
+                 ("<down>" . icomplete-forward-completions)
+                 ("C-n" . icomplete-forward-completions)
+                 ("<up>" . icomplete-backward-completions)
+                 ("C-p" . icomplete-backward-completions)
+                 ("C-v" . icomplete-vertical-toggle)))
+  #+end_src
 ** Ido
    #+begin_src emacs-lisp :tangle no
    (ido-mode)
    #+end_src
 ** orderless
+   links: https://www.reddit.com/r/emacs/comments/g6ocid/orderless_a_completion_style_that_matches/
+          https://github.com/oantolin/orderless
    #+begin_src emacs-lisp :tangle yes
    (use-package orderless
      :ensure t
      :init (icomplete-mode) ; optional but recommended!
      :custom (completion-styles '(orderless)))
    #+end_src
+** TODO which-key
+** TODO selectrum?
+** TODO live-completions?
+   + links: 
+     https://www.reddit.com/r/emacs/comments/geqgmy/ann_new_package_livecompletions_a_simple/
+     https://github.com/oantolin/live-completions
+** TODO LSP?
+   + links:
+     https://www.youtube.com/watch?v=SIzQ0snQJEo
+* TODO mode-line
+  + links:
+    https://github.com/maavelar5/dotemacs/blob/master/.emacs.d/marco-mode.el#L367
+
