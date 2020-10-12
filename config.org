@@ -85,3 +85,15 @@ TODO: split this up into sections
         neo-buffer--node-list-set, neo-buffer--newline-and-begin,
         neo-global--select-window, neo-buffer--insert-file-entry,
         neo-buffer--insert-dir-entry, neo-buffer--insert-root-entry
+* completion
+** Ido
+   #+begin_src emacs-lisp :tangle no
+   (ido-mode)
+   #+end_src
+** orderless
+   #+begin_src emacs-lisp :tangle yes
+   (use-package orderless
+     :ensure t
+     :init (icomplete-mode) ; optional but recommended!
+     :custom (completion-styles '(orderless)))
+   #+end_src
