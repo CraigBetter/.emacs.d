@@ -88,7 +88,7 @@ TODO: split this up into sections
         neo-buffer--insert-dir-entry, neo-buffer--insert-root-entry
 * completion
 ** icomplete-vertical
-   #+begin_src emacs-lisp :tangle yes
+   #+begin_src emacs-lisp :tangle no
    (use-package icomplete-vertical
      :ensure t
      :demand t
@@ -108,21 +108,31 @@ TODO: split this up into sections
                  ("C-p" . icomplete-backward-completions)
                  ("C-v" . icomplete-vertical-toggle)))
   #+end_src
-** Ido
-   #+begin_src emacs-lisp :tangle no
-   (ido-mode)
-   #+end_src
+
 ** orderless
    links: https://www.reddit.com/r/emacs/comments/g6ocid/orderless_a_completion_style_that_matches/
           https://github.com/oantolin/orderless
-   #+begin_src emacs-lisp :tangle yes
+   #+begin_src emacs-lisp :tangle no
    (use-package orderless
      :ensure t
      :init (icomplete-mode) ; optional but recommended!
      :custom (completion-styles '(orderless)))
    #+end_src
+
+** Ido
+   #+begin_src emacs-lisp :tangle no
+   (ido-mode)
+   #+end_src
+
 ** TODO which-key
 ** TODO selectrum?
+   #+begin_src emacs-lisp :tangle yes
+   (use-package selectrum
+     :ensure t
+     :config
+     (selectrum-mode +1))
+   #+end_src
+
 ** TODO live-completions?
    + links: 
      https://www.reddit.com/r/emacs/comments/geqgmy/ann_new_package_livecompletions_a_simple/
@@ -145,3 +155,8 @@ TODO: split this up into sections
  '((emacs-lisp . t)
    (shell . t))) ;this allows bash to be run in babel src blocks
 #+end_src
+
+* TODO try straight
+  <2020-10-19 Mon>
+  or some other emacs package manager
+  link: https://github.com/raxod502/straight.el
