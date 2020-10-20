@@ -125,12 +125,20 @@ TODO: split this up into sections
    #+end_src
 
 ** TODO which-key
-** TODO selectrum?
+
+** selectrum
+   doing this in the minibuffer does not yield a buffer full of
+   completions
+   (global-set-key (kbd "C-x 9") 'minibuffer-complete)
    #+begin_src emacs-lisp :tangle yes
    (use-package selectrum
      :ensure t
+     :init
+     (use-package selectrum-prescient
+       :ensure t)
      :config
-     (selectrum-mode +1))
+     (selectrum-mode +1)
+     (selectrum-prescient-mode +1))
    #+end_src
 
 ** TODO live-completions?
