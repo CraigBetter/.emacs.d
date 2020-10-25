@@ -63,6 +63,7 @@ TODO: split this up into sections
   #+end_src
 
 * evil-mode
+** main
   link for :init code https://stackoverflow.com/questions/22878668/emacs-org-mode-evil-mode-tab-key-not-working
   ^that solves the problem where org-cycle is not bound to tab in evil-mode in a terminal
   #+begin_src emacs-lisp :tangle yes
@@ -76,6 +77,22 @@ TODO: split this up into sections
     :config ;; run after loading evil-mode
     (evil-mode 1))
   #+end_src
+  
+** evil-terminal-cursor-changer
+   #+begin_src emacs-lisp :tangle yes
+   (use-package evil-terminal-cursor-changer
+     :ensure t
+     :config
+     (unless (display-graphic-p) ;only do when running in terminal
+       (require 'evil-terminal-cursor-changer)
+       (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+       (setq evil-motion-state-cursor 'box)  ; █
+       (setq evil-visual-state-cursor 'box)  ; █
+       (setq evil-normal-state-cursor 'box)  ; █
+       (setq evil-insert-state-cursor 'bar)  ; ⎸
+       (setq evil-emacs-state-cursor  'hbar)
+       (setq evil-operator-state-cursor  'hbar))) ; _ ;why doesn't this one work?
+   #+end_src
 
 * theme
   make background colorless when in terminal
@@ -178,3 +195,10 @@ TODO: split this up into sections
   <2020-10-19 Mon>
   or some other emacs package manager
   link: https://github.com/raxod502/straight.el
+* languages
+** haskell
+   #+begin_src emacs-lisp :tangle t
+   (use-package haskell-mode
+     :ensure t)
+   #+end_src
+
