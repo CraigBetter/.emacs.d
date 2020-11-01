@@ -225,3 +225,10 @@ TODO: split this up into sections
      :ensure t)
    #+end_src
 
+** slime
+   #+begin_src emacs-lisp :tangle t
+   (use-package slime
+     :ensure t)
+   #+end_src
+
+* TODO org-mode search
