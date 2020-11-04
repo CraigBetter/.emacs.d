@@ -202,17 +202,20 @@ TODO: split this up into sections
   + links:
     https://github.com/maavelar5/dotemacs/blob/master/.emacs.d/marco-mode.el#L367
 
-* org-babel
-  <2020-09-05 Sat>
-  https://orgmode.org/worg/org-contrib/babel/languages.html#configure
-  bash source blocks https://stackoverflow.com/questions/29163164/how-can-i-load-bash-as-opposed-to-sh-in-org-babel-to-enable-begin-src-bash
-#+begin_src emacs-lisp :tangle yes
-;; active Babel languages
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (shell . t))) ;this allows bash to be run in babel src blocks
-#+end_src
+* org-mode
+** org-babel
+   <2020-09-05 Sat>
+   https://orgmode.org/worg/org-contrib/babel/languages.html#configure
+   bash source blocks https://stackoverflow.com/questions/29163164/how-can-i-load-bash-as-opposed-to-sh-in-org-babel-to-enable-begin-src-bash
+ #+begin_src emacs-lisp :tangle yes
+ ;; active Babel languages
+ (org-babel-do-load-languages
+  'org-babel-load-languages
+  '((emacs-lisp . t)
+    (shell . t))) ;this allows bash to be run in babel src blocks
+ #+end_src
+
+** TODO org-mode search
 
 * TODO try straight
   <2020-10-19 Mon>
@@ -228,7 +231,7 @@ TODO: split this up into sections
 ** common-lisp
    #+begin_src emacs-lisp :tangle t
    (use-package slime
-     :ensure t)
+     :ensure t
+     :config (setq inferior-lisp-program "clisp"))
    #+end_src
 
-* TODO org-mode search
