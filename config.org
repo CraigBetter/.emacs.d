@@ -235,3 +235,9 @@ TODO: split this up into sections
      :config (setq inferior-lisp-program "clisp"))
    #+end_src
 
+* TODO eyebrowse
+* TODO magit
+  #+begin_src emacs-lisp :tangle yes
+  (use-package magit
+    :ensure t)
+  #+end_src
