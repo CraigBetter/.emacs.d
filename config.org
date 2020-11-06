@@ -236,8 +236,10 @@ TODO: split this up into sections
    #+end_src
 
 * TODO eyebrowse
-* TODO magit
+* magit
   #+begin_src emacs-lisp :tangle yes
   (use-package magit
     :ensure t)
   #+end_src
+
+* TODO folding
