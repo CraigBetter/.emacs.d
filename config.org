@@ -236,6 +236,23 @@ TODO: split this up into sections
    #+end_src
 
 * TODO eyebrowse
+  #+begin_src emacs-lisp :tangle yes
+  (use-package eyebrowse
+    :ensure t
+    :config ;; I could probably use apply and other macros to shorten this
+    (define-key evil-normal-state-map (kbd "g 0") 'eyebrowse-switch-to-window-config-0) ;; maybe also do this for visual state?
+    (define-key evil-normal-state-map (kbd "g 1") 'eyebrowse-switch-to-window-config-1)
+    (define-key evil-normal-state-map (kbd "g 2") 'eyebrowse-switch-to-window-config-2)
+    (define-key evil-normal-state-map (kbd "g 3") 'eyebrowse-switch-to-window-config-3)
+    (define-key evil-normal-state-map (kbd "g 4") 'eyebrowse-switch-to-window-config-4)
+    (define-key evil-normal-state-map (kbd "g 5") 'eyebrowse-switch-to-window-config-5)
+    (define-key evil-normal-state-map (kbd "g 6") 'eyebrowse-switch-to-window-config-6)
+    (define-key evil-normal-state-map (kbd "g 7") 'eyebrowse-switch-to-window-config-7)
+    (define-key evil-normal-state-map (kbd "g 8") 'eyebrowse-switch-to-window-config-8)
+    (define-key evil-normal-state-map (kbd "g 9") 'eyebrowse-switch-to-window-config-9)
+    (setq eyebrowse-new-workspace t)
+    (eyebrowse-mode))
+  #+end_src
 * magit
   #+begin_src emacs-lisp :tangle yes
   (use-package magit
