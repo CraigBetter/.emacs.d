@@ -117,6 +117,16 @@ TODO: split this up into sections
    (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
    #+end_src
 
+** evil-numbers
+   #+begin_src emacs-lisp :tangle yes
+   (use-package evil-numbers
+     :ensure t
+     :config
+     (define-key evil-normal-state-map (kbd "+") 'evil-numbers/inc-at-pt)
+     (define-key evil-normal-state-map (kbd "-") 'evil-numbers/dec-at-pt)
+     (define-key evil-visual-state-map (kbd "+") 'evil-numbers/inc-at-pt)
+     (define-key evil-visual-state-map (kbd "-") 'evil-numbers/dec-at-pt))
+   #+end_src
 * theme
   make background colorless when in terminal
   https://stackoverflow.com/questions/19054228/emacs-disable-theme-background-color-in-terminal
