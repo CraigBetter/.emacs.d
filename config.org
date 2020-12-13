@@ -134,6 +134,22 @@ TODO: split this up into sections
    (define-key evil-normal-state-map (kbd "M-k") 'evil-window-up)
    (define-key evil-normal-state-map (kbd "M-l") 'evil-window-right)
    #+end_src
+** evil-lion
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-lion
+  :ensure t
+  :config
+  (evil-lion-mode))
+#+end_src
+
+** evil-commentary
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-commentary
+  :ensure t
+  :config
+  (evil-commentary-mode))
+#+end_src
+
 * theme
   make background colorless when in terminal
   https://stackoverflow.com/questions/19054228/emacs-disable-theme-background-color-in-terminal
