@@ -154,11 +154,16 @@ TODO: split this up into sections
   make background colorless when in terminal
   https://stackoverflow.com/questions/19054228/emacs-disable-theme-background-color-in-terminal
   #+begin_src emacs-lisp :tangle yes
-  (use-package doom-themes
-  :ensure t
-  :config (load-theme 'doom-Iosvkem t)
-  (unless (display-graphic-p)
-    (set-face-background 'default "unspecified-bg")))
+  (if (display-graphic-p)
+      (use-package poet-theme
+        :ensure t
+        :config
+        (load-theme 'poet t))
+    (use-package doom-themes
+      :ensure t
+      :config
+      (load-theme 'doom-Iosvkem t)
+      (set-face-background 'default "unspecified-bg")))
   #+end_src
   + errors
     Warning (bytecomp): the following functions are not known to be defined:
